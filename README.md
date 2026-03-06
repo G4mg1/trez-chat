@@ -6,6 +6,18 @@ if getgenv().trezchat then
 	return
 end
 
+local BannedPeople = {}
+local NormalArg = {}
+
+local AdminArg = {}
+
+for i,v in pairs(BannedPeople) do
+	if table.find(v, Oplayer.UserId) then
+		return warn("You have been banned for abusing ! appeal on our discord server !")
+	end
+end
+
+
 -- StarterGui.TrezChat
 G2L["1"] = Instance.new("ScreenGui", game.CoreGui);
 G2L["1"]["Name"] = [[TrezChat]];
@@ -294,12 +306,78 @@ local script = G2L["3"];
 	local HttpService = game:GetService("HttpService")
 	local RunService = game:GetService("RunService")
 	local API = "https://text.pollinations.ai/openai"
+	local ArgsT = {}
+	
 
 	local Oplayer = Players.LocalPlayer
 	local chara = Oplayer.Character or Oplayer.CharacterAdded:Wait()
 
 	
 	local HttpService = game:GetService("HttpService")
+	
+	local function CheckIfAdmin(player)
+		if table.find(Developer, player.Name) then
+			return true
+		else
+			return false
+		end
+	end
+	
+	function AdminArg.Ban(player)
+		if not CheckIfAdmin(Oplayer) then
+			return
+		end
+		table.insert(BannedPeople, player.UserId)
+	end
+	
+	function AdminArg.warn(player, reason)
+		if not CheckIfAdmin(Oplayer) then
+			return
+		end
+		local DataContent = {
+			type = "message";
+			username = "Server";
+			message = "you have been warned by "..Oplayer.Name.." for "..reason;
+			userid = 1;
+			gamePlaying = "DataBase";
+			gameid = game.PlaceId
+		}
+		local Encoded = HttpService:JSONEncode(DataContent)
+		getgenv().trezchat:Send(Encoded)
+	end
+	
+	function AdminArg.unban(player)
+		if not CheckIfAdmin(Oplayer) then
+			return
+		end
+		for i, v in pairs(BannedPeople) do
+			if v == player.UserId then
+				table.remove(BannedPeople, i)
+			end
+		end
+	end
+	
+	
+	
+	local CommandHandler = SourceChat.Text
+	local Split = string.split(CommandHandler, " ")
+	local Perfix = Split[1]
+	local Command = Split[2]
+	local Arg = Split[3]
+	
+	local AdminArg = {
+		["ban"] = AdminArg.Ban;
+		["warn"] = AdminArg.warn;
+		["unban"] = AdminArg.unban;
+	}
+	
+	if Perfix == "?" then
+		if AdminArg[Command] then
+			AdminArg[Command](Arg)
+		end
+	end
+	
+	
 	
 	
 	
@@ -320,6 +398,7 @@ local script = G2L["3"];
 				message = "Nice Try Buddy !!!";
 				userid = player.UserId;
 				gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
+				gameid = game.PlaceId;
 			}
 			local Encoded = HttpService:JSONEncode(DataContent)
 			getgenv().trezchat:Send(Encoded)
@@ -330,10 +409,12 @@ local script = G2L["3"];
 				message = SourceChat.Text;
 				userid = player.UserId;
 				gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
+				gameid = game.PlaceId
 			}
 			local Encoded = HttpService:JSONEncode(DataContent)
 			getgenv().trezchat:Send(Encoded)
 		end
+		
 	
 		SendSound:Play()
 		SourceChat.Text = ""
@@ -387,39 +468,43 @@ local script = G2L["3"];
 		message = "Make Sure To Join Our Discord Server = ( https://discord.gg/TPtrJceCva )";
 		userid = 1;
 		gamePlaying = "DataBase";
+		gameid = game.PlaceId
 	}
 	local Encoded = HttpService:JSONEncode(DataContent)
 	getgenv().trezchat:Send(Encoded)
 	
 	while true do
-		wait(100)
+		wait(1000)
 		local DataContent = {
 			type = "message";
 			username = "Server";
 			message = "Be Careful Do Not Share Your Personal Info !!" ;
 			userid = 1;
 			gamePlaying = "DataBase";
+			gameid = game.PlaceId
 		}
 		local Encoded = HttpService:JSONEncode(DataContent)
 		getgenv().trezchat:Send(Encoded)
-		wait(100)
+		wait(1000)
 		local DataContent = {
 			type = "message";
 			username = "Server";
 			message = "Make Sure To Join Our Discord Server = ( https://discord.gg/TPtrJceCva )" ;
 			userid = 1;
 			gamePlaying = "DataBase";
+			gameid = game.PlaceId
 
 		}
 		local Encoded = HttpService:JSONEncode(DataContent)
 		getgenv().trezchat:Send(Encoded)
-		wait(100)
+		wait(1000)
 		local DataContent = {
 			type = "message";
 			username = "Server";
 			message = "if you saw any bug you can send the screen record of the issue to our discord server in #report channel so we can sole it" ;
 			userid = 1;
 			gamePlaying = "DataBase";
+			gameid = game.PlaceId
 		}
 		local Encoded = HttpService:JSONEncode(DataContent)
 		getgenv().trezchat:Send(Encoded)
