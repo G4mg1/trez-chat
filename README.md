@@ -415,60 +415,30 @@ local script = G2L["3"];
 	
 	local function sendMessage()
 		if SourceChat.Text == "" then return end
-		local url = "https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/en"
 		HandleCommand(SourceChat.Text)
-		local player = game:GetService("Players").LocalPlayer
-
-		if string.find(SourceChat.Text, "loadstring") then
-			local DataContent = {
-				type = "message";
-				username = player.Name;
-				message = "Nice Try Buddy !!!";
-				userid = player.UserId;
-				gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
-				gameid = game.PlaceId;
-			}
-			local Encoded = HttpService:JSONEncode(DataContent)
-			getgenv().trezchat:Send(Encoded)
-			return
-		end
-
-		local DataContent = nil
-
-		local Success, badwords = pcall(function()
-			return game:HttpGet(url)
-		end)
-
-		if Success then
-			local badwords = string.split(badwords, "\n")
-			for i,v in pairs(badwords) do
-				if string.find(string.lower(SourceChat.Text), string.lower(v)) then
-					DataContent = {
-						type = "message";
-						username = player.Name;
-						message = "Please Watch your language !";
-						userid = player.UserId;
-						gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
-						gameid = game.PlaceId;
-					}
-					break
-				end
+		
+		local function Filtered(word)
+			local Success, result = pcall(function()
+				game:HttpGet("https://www.purgomalum.com/service/containsprofanity?text="..word)
+			end)
+			
+			if Success then
+				local DataContent = {
+					type = "message";
+					username = player.Name;
+					message = result;
+					userid = player.UserId;
+					gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
+					gameid = game.PlaceId;
+				}
+				local Encoded = HttpService:JSONEncode(DataContent)
+				getgenv().trezchat:Send(Encoded)
+				return
 			end
 		end
-
-		if not DataContent then
-			DataContent = {
-				type = "message";
-				username = player.Name;
-				message = SourceChat.Text;
-				userid = player.UserId;
-				gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
-				gameid = game.PlaceId
-			}
-		end
-
-		local Encoded = HttpService:JSONEncode(DataContent)
-		getgenv().trezchat:Send(Encoded)
+		
+		Filtered(SourceChat.Text)
+		
 
 		SendSound:Play()
 		SourceChat.Text = ""
