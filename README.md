@@ -277,6 +277,9 @@ G2L["1a"]["Name"] = [[Sender]];
 G2L["1a"]["Position"] = UDim2.new(0.33983, 0, 0.31819, 0);
 
 
+
+
+
 -- StarterGui.TrezChat.Main.ChatHistory.UIPadding
 G2L["1b"] = Instance.new("UIPadding", G2L["13"]);
 G2L["1b"]["PaddingTop"] = UDim.new(0, 5);
@@ -314,70 +317,91 @@ local script = G2L["3"];
 
 	
 	local HttpService = game:GetService("HttpService")
+
 	
+	local Players = game:GetService("Players")
+	local Oplayer = Players.LocalPlayer
+
+	local Developer = {
+		"C00lHamo0t2025";
+		"ikik9i4"
+	}
+
 	local function CheckIfAdmin(player)
 		if table.find(Developer, player.Name) then
 			return true
-		else
-			return false
+		end
+		return false
+	end
+
+	
+	local function FindPlayer(str)
+		str = string.lower(str)
+
+		for _,plr in pairs(Players:GetPlayers()) do
+			if string.sub(string.lower(plr.Name),1,#str) == str then
+				return plr
+			end
 		end
 	end
-	
+
 	function AdminArg.Ban(player)
-		if not CheckIfAdmin(Oplayer) then
-			return
-		end
+		if not CheckIfAdmin(Oplayer) then return end
+		if not player then return end
+
 		table.insert(BannedPeople, player.UserId)
 	end
-	
+
 	function AdminArg.warn(player, reason)
-		if not CheckIfAdmin(Oplayer) then
-			return
-		end
+		if not CheckIfAdmin(Oplayer) then return end
+		if not player then return end
+
 		local DataContent = {
 			type = "message";
 			username = "Server";
-			message = "you have been warned by "..Oplayer.Name.." for "..reason;
+			message = player.Name.." has been warned by "..Oplayer.Name.." for "..(reason or "No reason");
 			userid = 1;
 			gamePlaying = "DataBase";
 			gameid = game.PlaceId
 		}
+
 		local Encoded = HttpService:JSONEncode(DataContent)
 		getgenv().trezchat:Send(Encoded)
 	end
-	
+
 	function AdminArg.unban(player)
-		if not CheckIfAdmin(Oplayer) then
-			return
-		end
-		for i, v in pairs(BannedPeople) do
+		if not CheckIfAdmin(Oplayer) then return end
+		if not player then return end
+
+		for i,v in pairs(BannedPeople) do
 			if v == player.UserId then
-				table.remove(BannedPeople, i)
+				table.remove(BannedPeople,i)
 			end
 		end
 	end
-	
-	
-	
-	local CommandHandler = SourceChat.Text
-	local Split = string.split(CommandHandler, " ")
-	local Perfix = Split[1]
-	local Command = Split[2]
-	local Arg = Split[3]
-	
-	local AdminArg = {
+
+	local AdminCommands = {
 		["ban"] = AdminArg.Ban;
 		["warn"] = AdminArg.warn;
 		["unban"] = AdminArg.unban;
 	}
-	
-	if Perfix == "?" then
-		if AdminArg[Command] then
-			AdminArg[Command](Arg)
+
+	local function HandleCommand(text)
+		local split = string.split(text," ")
+
+		local prefix = split[1]
+		local command = split[2]
+		local playerArg = split[3]
+		local reason = split[4]
+
+		if prefix ~= "?" then return end
+
+		local targetPlayer = FindPlayer(playerArg)
+
+		if AdminCommands[command] then
+			AdminCommands[command](targetPlayer, reason)
 		end
 	end
-	
-	
 	
 	
 	
@@ -390,6 +414,7 @@ local script = G2L["3"];
 	
 	local function sendMessage()
 		if SourceChat.Text == "" then return end
+		HandleCommand(SourceChat.Text)
 		local player = game:GetService("Players").LocalPlayer
 		if string.find(SourceChat.Text, "loadstring") then
 			local DataContent = {
@@ -443,12 +468,15 @@ local script = G2L["3"];
 		local message = Decoded.message or ""
 		local userid = Decoded.userid or 0
 		local gamePlaying = Decoded.gamePlaying or "N/A"
+		
+	
 	
 		local Clone = ChatExample:Clone()
 		Clone.Name = username .. " Chats "
 		Clone.Parent = ChatHistory
 		Clone.MessageSource.Text = message
 		Clone.PlayerIcon.Image = "rbxthumb://type=AvatarHeadShot&id="..userid.."&w=420&h=420"
+	
 		
 		NoticeSound:Play()
 	
