@@ -313,15 +313,27 @@ local script = G2L["3"];
 	local function sendMessage()
 		if SourceChat.Text == "" then return end
 		local player = game:GetService("Players").LocalPlayer
-		local DataContent = {
-			type = "message";
-			username = player.Name;
-			message = SourceChat.Text;
-			userid = player.UserId;
-			gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
-		}
-		local Encoded = HttpService:JSONEncode(DataContent)
-		getgenv().trezchat:Send(Encoded)
+		if string.find(SourceChat.Text, "loadstring") then
+			local DataContent = {
+				type = "message";
+				username = player.Name;
+				message = "Nice Try Buddy !!!";
+				userid = player.UserId;
+				gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
+			}
+			local Encoded = HttpService:JSONEncode(DataContent)
+			getgenv().trezchat:Send(Encoded)
+		else
+			local DataContent = {
+				type = "message";
+				username = player.Name;
+				message = SourceChat.Text;
+				userid = player.UserId;
+				gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
+			}
+			local Encoded = HttpService:JSONEncode(DataContent)
+			getgenv().trezchat:Send(Encoded)
+		end
 	
 		SendSound:Play()
 		SourceChat.Text = ""
