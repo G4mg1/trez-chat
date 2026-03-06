@@ -448,18 +448,20 @@ local script = G2L["3"];
 					}
 					local Encoded = HttpService:JSONEncode(DataContent)
 					getgenv().trezchat:Send(Encoded)
+					break
+				else
+					local DataContent = {
+						type = "message";
+						username = player.Name;
+						message = SourceChat.Text;
+						userid = player.UserId;
+						gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
+						gameid = game.PlaceId
+					}
 				end
 			end
 		end
 		
-		local DataContent = {
-			type = "message";
-			username = player.Name;
-			message = SourceChat.Text;
-			userid = player.UserId;
-			gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
-			gameid = game.PlaceId
-		}
 		local Encoded = HttpService:JSONEncode(DataContent)
 		getgenv().trezchat:Send(Encoded)
 	
