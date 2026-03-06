@@ -110,7 +110,8 @@ G2L["c"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]]
 G2L["c"]["Size"] = UDim2.new(0, 224, 0.01, 16);
 G2L["c"]["Position"] = UDim2.new(0.02446, 0, 0.85934, 0);
 G2L["c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["c"]["Text"] = [[hello]];
+G2L["c"]["Text"] = [[]];
+G2L["c"]["PlaceholderText"] = "Send your message here..."
 G2L["c"]["BackgroundTransparency"] = 0.3;
 
 
@@ -163,7 +164,7 @@ G2L["12"]["RichText"] = true;
 G2L["12"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
 G2L["12"]["Size"] = UDim2.new(0.16, 200, -0.22, 50);
 G2L["12"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["12"]["Text"] = [[<font color = 'rgb(242, 111, 2)'><font face='Arial'>Trez</font></font> <font color = 'rgb(255, 255, 255)'>Chat</font>]];
+G2L["12"]["Text"] = [[<font color = 'rgb(242, 111, 2)'><font face='Arial'>Trez</font></font> <font color = 'rgb(255, 255, 255)'>Chat V1</font>]];
 G2L["12"]["Position"] = UDim2.new(0.46, 0, 0.08, 0);
 
 
@@ -274,7 +275,7 @@ G2L["1b"]["PaddingLeft"] = UDim.new(0, 5);
 local function C_3()
 local script = G2L["3"];
 	local NoticeSound = Instance.new("Sound", G2L["1"])
-	NoticeSound.SoundId = "rbxassetid://126810100582738"
+	NoticeSound.SoundId = "rbxassetid://2865226708"
 	NoticeSound.Name = "NoticeReciveSound"
 	local SendSound = Instance.new("Sound", G2L["1"])
 	SendSound.SoundId = "rbxassetid://5485567028"
@@ -286,29 +287,46 @@ local script = G2L["3"];
 	local ChatExample = ChatHistory.ChatExample
 	ChatExample.Visible = false
 	
+	local http_func = http_request or request
+	local Players = game:GetService("Players")
+	local TextChatService = game:GetService("TextChatService")
+	local TextChannel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
 	local HttpService = game:GetService("HttpService")
+	local RunService = game:GetService("RunService")
+	local API = "https://text.pollinations.ai/openai"
+
+	local Oplayer = Players.LocalPlayer
+	local chara = Oplayer.Character or Oplayer.CharacterAdded:Wait()
+
+	
+	local HttpService = game:GetService("HttpService")
+	
 	
 	
 	getgenv().trezchat = WebSocket.connect("wss://free.blr2.piesocket.com/v3/1?api_key=eLudeCBiiTiQSr6DWJPMPfpZK9B6ghEu90ZbJwzm&notify_self=1")
 	
 	local Developer = {
 		"C00lHamo0t2025";
+		"ikik9i4"
 	}
 	
 	local function sendMessage()
-		local player = game:GetService("Players").LocalPlayer
 		if SourceChat.Text == "" then return end
-	
+		local player = game:GetService("Players").LocalPlayer
 		local DataContent = {
 			type = "message";
 			username = player.Name;
 			message = SourceChat.Text;
 			userid = player.UserId;
+			gamePlaying = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name;
 		}
 		local Encoded = HttpService:JSONEncode(DataContent)
 		getgenv().trezchat:Send(Encoded)
+	
 		SendSound:Play()
 		SourceChat.Text = ""
+		
+	
 	end
 	
 	
@@ -331,6 +349,7 @@ local script = G2L["3"];
 		local username = Decoded.username or "Unknown"
 		local message = Decoded.message or ""
 		local userid = Decoded.userid or 0
+		local gamePlaying = Decoded.gamePlaying or "N/A"
 	
 		local Clone = ChatExample:Clone()
 		Clone.Name = username .. " Chats "
@@ -341,11 +360,13 @@ local script = G2L["3"];
 		NoticeSound:Play()
 	
 		if table.find(Developer, username) then
-			Clone.Sender.Text = username.." ( Dev )"
+			Clone.Sender.Text = username.." ( Dev ) ".."( "..Decoded.gamePlaying.." )";
 		else
-			Clone.Sender.Text = username
+			Clone.Sender.Text = username.." ( "..Decoded.gamePlaying.." )"
 		end
 		Clone.Visible = true
+		
+		
 	end)
 	
 	local DataContent = {
@@ -353,6 +374,7 @@ local script = G2L["3"];
 		username = "Server";
 		message = "Make Sure To Join Our Discord Server = ( https://discord.gg/TPtrJceCva )";
 		userid = 1;
+		gamePlaying = "DataBase";
 	}
 	local Encoded = HttpService:JSONEncode(DataContent)
 	getgenv().trezchat:Send(Encoded)
@@ -362,11 +384,34 @@ local script = G2L["3"];
 		local DataContent = {
 			type = "message";
 			username = "Server";
-			message = "Make Sure To Join Our Discord Server = ( https://discord.gg/TPtrJceCva )";
+			message = "Be Careful Do Not Share Your Personal Info !!" ;
 			userid = 1;
+			gamePlaying = "DataBase";
 		}
 		local Encoded = HttpService:JSONEncode(DataContent)
 		getgenv().trezchat:Send(Encoded)
+		wait(100)
+		local DataContent = {
+			type = "message";
+			username = "Server";
+			message = "Make Sure To Join Our Discord Server = ( https://discord.gg/TPtrJceCva )" ;
+			userid = 1;
+			gamePlaying = "DataBase";
+
+		}
+		local Encoded = HttpService:JSONEncode(DataContent)
+		getgenv().trezchat:Send(Encoded)
+		wait(100)
+		local DataContent = {
+			type = "message";
+			username = "Server";
+			message = "if you saw any bug you can send the screen record of the issue to our discord server in #report channel so we can sole it" ;
+			userid = 1;
+			gamePlaying = "DataBase";
+		}
+		local Encoded = HttpService:JSONEncode(DataContent)
+		getgenv().trezchat:Send(Encoded)
+		
 	end
 end;
 task.spawn(C_3);
