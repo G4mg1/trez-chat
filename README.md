@@ -413,15 +413,17 @@ local script = G2L["3"];
 	}
 	
 	
+	
 	local function sendMessage()
 		if SourceChat.Text == "" then return end
 		HandleCommand(SourceChat.Text)
-		
+
 		local function Filtered(word)
 			local Success, result = pcall(function()
-				game:HttpGet("https://www.purgomalum.com/service/containsprofanity?text="..word)
+				local encodedWord = HttpService:UrlEncode(word)
+				return game:HttpGet("https://www.purgomalum.com/service/containsprofanity?text="..encodedWord)
 			end)
-			
+
 			if Success then
 				local DataContent = {
 					type = "message";
@@ -434,11 +436,12 @@ local script = G2L["3"];
 				local Encoded = HttpService:JSONEncode(DataContent)
 				getgenv().trezchat:Send(Encoded)
 				return
+			else
+				warn("Failed to filter message:", result)
 			end
 		end
-		
+
 		Filtered(SourceChat.Text)
-		
 
 		SendSound:Play()
 		SourceChat.Text = ""
