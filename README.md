@@ -417,6 +417,7 @@ local script = G2L["3"];
 	local function sendMessage()
 		if SourceChat.Text == "" then return end
 		HandleCommand(SourceChat.Text)
+		local player = Oplayer
 
 		local function Filtered(word)
 			local Success, result = pcall(function()
