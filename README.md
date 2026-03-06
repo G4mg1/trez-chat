@@ -422,7 +422,7 @@ local script = G2L["3"];
 		local function Filtered(word)
 			local Success, result = pcall(function()
 				local encodedWord = HttpService:UrlEncode(word)
-				return game:HttpGet("https://www.purgomalum.com/service/containsprofanity?text="..encodedWord)
+				return game:HttpGet("https://www.purgomalum.com/service/plain?text="..encodedWord)
 			end)
 
 			if Success then
